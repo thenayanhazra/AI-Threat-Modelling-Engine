@@ -10,6 +10,7 @@ Turn architecture diagrams and infrastructure-as-code into an evidence-backed th
 - Deterministic findings tied to supplied evidence
 - Graph-based paths from public entry points to data stores or privileged workloads
 - JSON API and board-ready PDF output
+- Optional OpenAI executive enrichment constrained to deterministic evidence and existing finding IDs
 
 The engine does not claim that a MITRE technique occurred. Mappings describe plausible adversary behavior and must be validated against runtime evidence.
 
@@ -26,6 +27,7 @@ Open `http://localhost:8000/docs`, or:
 curl -F file=@examples/architecture.mmd \
   -F kind=mermaid \
   -F title="Payments Platform" \
+  -F ai_enrichment=true \
   http://localhost:8000/v1/analyze
 
 curl -o threat-model.pdf \
@@ -65,7 +67,7 @@ Uploads are parsed in memory and capped at 5 MiB. XML uses `defusedxml`; YAML us
 
 ## Roadmap
 
-- Optional OpenAI structured-output enrichment with strict evidence citations and prompt-injection isolation
+- OpenAI JSON-schema structured outputs and richer evidence-grounded narrative sections
 - Terraform HCL AST and plan/state ingestion
 - Kubernetes relationship resolution for selectors, Services, Ingresses, volumes, and RBAC
 - Editable assumptions, compensating controls, risk acceptance, and reviewer workflow
