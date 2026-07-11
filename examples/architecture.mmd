@@ -1,0 +1,6 @@
+flowchart LR
+  user[Internet User] -->|HTTPS| api[Public API]
+  api -->|queries| db[(Customer Database)]
+  api -->|publishes| queue[Event Queue]
+  worker[Worker] -->|consumes| queue
+
