@@ -7,6 +7,7 @@ dependencies = [
   "fastapi>=0.115,<1", "uvicorn[standard]>=0.30,<1", "python-multipart>=0.0.18,<1",
   "pydantic-settings>=2.6,<3", "PyYAML>=6.0,<7", "defusedxml>=0.7,<1",
   "openai>=1.55,<2", "reportlab>=4.2,<5"
+  , "python-hcl2>=7.3,<8"
 ]
 
 [project.optional-dependencies]
@@ -18,4 +19,3 @@ testpaths = ["tests"]
 
 [tool.ruff]
 line-length = 100
-
