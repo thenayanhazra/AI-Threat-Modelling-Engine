@@ -19,6 +19,8 @@ class Component(BaseModel):
     internet_exposed: bool = False
     privileged: bool = False
     stores_data: bool = False
+    logging_enabled: bool | None = None
+    confidence: str = "medium"
     metadata: dict[str, object] = Field(default_factory=dict)
 
 
@@ -33,6 +35,8 @@ class Architecture(BaseModel):
     components: list[Component] = Field(default_factory=list)
     flows: list[DataFlow] = Field(default_factory=list)
     assumptions: list[str] = Field(default_factory=list)
+    warnings: list[str] = Field(default_factory=list)
+    coverage: dict[str, object] = Field(default_factory=dict)
 
 
 class Finding(BaseModel):
@@ -46,6 +50,8 @@ class Finding(BaseModel):
     evidence: list[str]
     mitre_attack: list[str]
     recommendations: list[str]
+    confidence: str
+    status: str = "candidate"
 
 
 class AttackPath(BaseModel):
@@ -55,6 +61,7 @@ class AttackPath(BaseModel):
     severity: str
     rationale: str
     mitre_attack: list[str]
+    confidence: str = "medium"
 
 
 class ThreatModel(BaseModel):
@@ -66,4 +73,6 @@ class ThreatModel(BaseModel):
     recommendations: list[str]
     methodology: str
     disclaimer: str
-
+    ruleset_version: str = "2026.07"
+    attack_version: str = "Enterprise ATT&CK v18"
+    ai_enriched: bool = False
