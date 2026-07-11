@@ -3,6 +3,7 @@ import json
 from fastapi import FastAPI, File, Form, HTTPException, UploadFile
 from fastapi.responses import Response
 from .engine import analyze
+from .llm import enrich
 from .models import SourceKind, ThreatModel
 from .parsers import parse_input
 from .report import render_pdf
@@ -15,17 +16,20 @@ def health(): return {"status": "ok"}
 
 
 @app.post("/v1/analyze", response_model=ThreatModel)
-async def create_model(file: UploadFile = File(...), kind: SourceKind | None = Form(None), title: str = Form("Infrastructure Threat Model")):
+async def create_model(file: UploadFile = File(...), kind: SourceKind | None = Form(None), title: str = Form("Infrastructure Threat Model"), ai_enrichment: bool = Form(False)):
     try:
-        return analyze(parse_input(file.filename or "input", await file.read(), kind), title)
+        model = analyze(parse_input(file.filename or "input", await file.read(), kind), title)
+        return await enrich(model) if ai_enrichment else model
     except (ValueError, UnicodeError, json.JSONDecodeError) as exc:
         raise HTTPException(status_code=422, detail=str(exc)) from exc
 
 
 @app.post("/v1/report.pdf")
-async def create_report(file: UploadFile = File(...), kind: SourceKind | None = Form(None), title: str = Form("Infrastructure Threat Model")):
+async def create_report(file: UploadFile = File(...), kind: SourceKind | None = Form(None), title: str = Form("Infrastructure Threat Model"), ai_enrichment: bool = Form(False)):
     try:
         model = analyze(parse_input(file.filename or "input", await file.read(), kind), title)
+        if ai_enrichment:
+            model = await enrich(model)
         return Response(render_pdf(model), media_type="application/pdf", headers={"Content-Disposition": 'attachment; filename="threat-model.pdf"'})
     except (ValueError, UnicodeError) as exc:
         raise HTTPException(status_code=422, detail=str(exc)) from exc
